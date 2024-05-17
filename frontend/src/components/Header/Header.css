@@ -1,0 +1,25 @@
+.header {
+	display: flex;
+	flex-direction: row;
+	justify-content: space-between;
+	align-items: center;
+	background-color: #f8f9fa;
+	padding: 10px 20px;
+}
+
+.header ul {
+	display: flex;
+	flex-direction: row;
+	background-color: transparent;
+}
+
+.header ul li {
+	background-color: transparent;
+	list-style-type: none;
+	margin-right: 10px;
+}
+
+.header ul li a {
+	text-decoration: none;
+	color: #000;
+}

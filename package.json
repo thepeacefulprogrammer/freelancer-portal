@@ -1,0 +1,15 @@
+{
+	"name": "freelancer-portal",
+	"version": "1.0.0",
+	"description": "Freelancer Portal",
+	"scripts": {
+		"start": "concurrently \"cd frontend && npm start\" \"cd backend && nodemon server.js\""
+	},
+	"dependencies": {
+		"concurrently": "^6.2.2",
+		"express": "^4.17.1",
+		"nodemon": "^2.0.15",
+		"react": "^17.0.2",
+		"react-dom": "^17.0.2"
+	}
+}
