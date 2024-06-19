@@ -1,13 +1,6 @@
 import React, { useEffect, useState, useRef } from "react";
-import { fetchProjects } from "../../utils/api";
+import { fetchProjects, fetchExchangeRate } from "../../utils/api";
 import "./LatestProject.css";
-import axios from "axios";
-
-// import emailjs from "@emailjs/browser";
-
-// const SERVICE_ID = "service_lbbu0wt";
-// const TEMPLATE_ID = "template_x0k7c2i";
-// const PUBLIC_KEY = "mxKaZw6O3lW9N8B7s";
 
 const LatestProject = () => {
 	const [project, setProject] = useState(null);
@@ -19,29 +12,30 @@ const LatestProject = () => {
 	const getProjects = async () => {
 		try {
 			const data = await fetchProjects();
-			if (data.result && data.result.projects && data.result.projects.length > 0) {
-				const newProject = data.result.projects[0];
+			console.log("Projects data:", data);
+
+			if (data && data.length > 0) {
+				const newProject = data[0];
 
 				if (previousProjectId.current !== newProject.id) {
 					if (previousProjectId.current !== null) {
 						notificationSound.current.play();
 					}
 					setProject(newProject);
-					previousProjectId.current = newProject.id; // Update the ref
+					previousProjectId.current = newProject.id;
 				} else {
-					setProject(newProject); // Ensure project is updated even if ID is the same
+					setProject(newProject);
 				}
 
-				// Fetch exchange rate
-				const response = await axios.get("https://api.exchangerate.host/latest", {
-					params: {
-						base: newProject.currency.code,
-						symbols: "CAD",
-					},
-				});
+				// Fetch exchange rate from backend
+				const exchangeData = await fetchExchangeRate();
+				console.log("Exchange rate data:", exchangeData);
 
-				console.log(response.data);
-				setExchangeRate(response.data.rates.CAD);
+				if (exchangeData && exchangeData[newProject.currency.code]) {
+					setExchangeRate(exchangeData[newProject.currency.code]);
+				} else {
+					console.error("Exchange rate for currency not found");
+				}
 			}
 		} catch (error) {
 			console.error("Error loading projects", error.response ? error.response.data : error.message);
@@ -97,7 +91,7 @@ const LatestProject = () => {
 	};
 
 	const convertToCAD = (amount) => {
-		return exchangeRate ? roundToTwoDecimalPlaces(amount * exchangeRate) : null;
+		return exchangeRate ? roundToTwoDecimalPlaces(amount / exchangeRate) : null;
 	};
 
 	return (

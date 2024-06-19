@@ -1,8 +1,6 @@
-// src/components/Projects.js
 import React, { useEffect, useState } from "react";
 import { fetchProjects, fetchExchangeRate } from "../utils/api";
 import "./Projects.css";
-import axios from "axios";
 
 const Projects = () => {
 	const [projects, setProjects] = useState([]);
@@ -28,12 +26,12 @@ const Projects = () => {
 
 				// remove projects that are older than 1 day
 				const currentDate = new Date();
-				const threeDaysAgo = new Date(currentDate);
-				threeDaysAgo.setDate(currentDate.getDate() - 1);
+				const oneDayAgo = new Date(currentDate);
+				oneDayAgo.setDate(currentDate.getDate() - 1);
 
 				data = data.filter((project) => {
 					const projectDate = new Date(project.submitdate * 1000);
-					return projectDate > threeDaysAgo;
+					return projectDate > oneDayAgo;
 				});
 
 				setProjects(data);
@@ -78,6 +76,22 @@ const Projects = () => {
 		window.open(url, "_blank");
 	};
 
+	// Calculate value in CAD using exchangeRate object
+	const getValueInCAD = (rate, currencyCode) => {
+		if (currencyCode === "CAD") {
+			return rate;
+		}
+		if (exchangeRate && exchangeRate[currencyCode]) {
+			console.log(
+				`Converting ${rate} ${currencyCode} to CAD using rate ${exchangeRate[currencyCode]}`
+			);
+			const rateInCAD = rate / exchangeRate[currencyCode];
+			return rateInCAD;
+		}
+		console.error(`Exchange rate for ${currencyCode} not found`);
+		return null;
+	};
+
 	return (
 		<div>
 			<h1>Projects</h1>
@@ -88,11 +102,24 @@ const Projects = () => {
 						<p style={{ whiteSpace: "pre-line" }}>{project.description}</p>
 						<p>
 							Budget: {roundToTwoDecimalPlaces(project.budget.minimum)} to{" "}
-							{roundToTwoDecimalPlaces(project.budget.maximum)} {project.currency.code}
+							{roundToTwoDecimalPlaces(project.budget.maximum)} {project.currency.code} or{" "}
+							{exchangeRate
+								? `${roundToTwoDecimalPlaces(
+										getValueInCAD(project.budget.minimum, project.currency.code)
+								  )} to ${roundToTwoDecimalPlaces(
+										getValueInCAD(project.budget.maximum, project.currency.code)
+								  )} CAD`
+								: "Loading..."}
 						</p>
 						<p>
 							Average Bid: {roundToTwoDecimalPlaces(project.bid_stats.bid_avg)}{" "}
-							{project.currency.code} with {project.bid_stats.bid_count} bids
+							{project.currency.code} or{" "}
+							{exchangeRate
+								? `${roundToTwoDecimalPlaces(
+										getValueInCAD(project.bid_stats.bid_avg, project.currency.code)
+								  )} CAD`
+								: "Loading..."}{" "}
+							with {project.bid_stats.bid_count} bids
 						</p>
 						<p>Posted {timeSincePosted(project.time_submitted)} ago</p>
 						<button onClick={handleOpenProjectInFreelancer(project.id)}>Open Project</button>

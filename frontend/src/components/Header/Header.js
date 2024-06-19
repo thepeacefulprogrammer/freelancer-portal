@@ -13,6 +13,9 @@ const Header = () => {
 					<li>
 						<Link to="/projects">Projects</Link>
 					</li>
+					<li>
+						<Link to="/bidbot">BidBot</Link>
+					</li>
 				</ul>
 			</nav>
 		</header>

@@ -1,0 +1,16 @@
+.bid-bot-container {
+	padding: 1rem;
+}
+
+.bid-bot-container button {
+	padding: 1rem 2rem;
+	border-radius: 0.5rem;
+	border: none;
+	box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+	background-color: #333;
+	color: #eee;
+}
+
+.bid-bot-container button:hover {
+	background-color: #444;
+}
